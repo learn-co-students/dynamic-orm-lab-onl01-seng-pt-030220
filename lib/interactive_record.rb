@@ -56,11 +56,6 @@ class InteractiveRecord
     DB[:conn].execute(sql, name)
   end
 
-  # def self.find_by(col_names_for_insert)
-  #   sql = "SELECT * FROM #{self.table_name} WHERE #{col_names_for_insert} = ?"
-  #   DB[:conn].execute(sql, values_for_insert)[0]
-  # end
-
   def self.find_by(attribute)
     
     attribute.map do |attribute, value|
