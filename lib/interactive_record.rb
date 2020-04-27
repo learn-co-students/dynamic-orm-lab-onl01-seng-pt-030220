@@ -12,15 +12,15 @@ class InteractiveRecord
     DB[:conn].results_as_hash = true
 
     sql = "PRAGMA table_info('#{table_name}')"
-
     table_info = DB[:conn].execute(sql)
+
     column_names = []
-    table_info.each do |column|
-      column_names << column["name"]
+    table_info.each do |col_name|
+      column_names << col_name["name"]
     end
     column_names.compact
   end
-
+ 
   def initialize(options={})
     options.each do |property, value|
       self.send("#{property}=", value)
@@ -34,9 +34,9 @@ class InteractiveRecord
   def col_names_for_insert
     self.class.column_names.delete_if {|col| col == "id"}.join(", ")
   end
-  
+
   def values_for_insert
-    values =[]
+    values = []
     self.class.column_names.each do |col_name|
       values << "'#{send(col_name)}'" unless send(col_name).nil?
     end
@@ -56,15 +56,9 @@ class InteractiveRecord
 
   def self.find_by(attribute_hash)
     attribute_hash.map do |attribute, value|
-      sql = "SELECT * FROM #{self.table_name} WHERE #{attribute} = ?"
+      sql = "SELECT * FROM #{self.table_name} WHERE #{attribute} = ? "
       DB[:conn].execute(sql, "#{value}")[0]
     end
   end
-    # sql = "SELECT * FROM #{self.table_name} WHERE #{attribute_hash.keys.first} = ?"
-    # DB[:conn].execute(sql, attribute_hash.values)
-    
-    # value = attribute_hash.values.first
-    # formatted_value = value.class == Fixnum ? value : "'#{value}'"
-    # sql = "SELECT * FROM #{self.table_name} WHERE #{attribute_hash.keys.first} = #{formatted_value}"
-    # DB[:conn].execute(sql)
+
 end
