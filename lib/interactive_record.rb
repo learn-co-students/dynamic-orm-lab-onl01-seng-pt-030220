@@ -28,31 +28,12 @@ class InteractiveRecord
         DB[:conn].execute(sql, name)
     end
 
-    def self.find_by(attributes)
-        column = []
-        column_val = []
-        attributes.each do |key, value|
-            column << key.to_s
-            if value.to_i == 0
-                column_val << "'#{value}'"
-            else 
-                column_val << value
-            end
-        end
-
-        if column.length == 1
-            string = "#{column.join()} = #{column_val.join()}"
-        else 
-            string = "#{column[0].to_s} = #{val[0].to_s} AND #{column[1].to_s} = #{val[1].to_s}"
-        end
-
-        sql = <<-SQL
-        SELECT * FROM #{table_name}
-        WHERE #{string}
-        SQL
-
+    def self.find_by(attribute_hash)
+        value = attribute_hash.values.first
+        formatted_value = value.class == Fixnum ? value : "'#{value}'"
+        sql = "SELECT * FROM #{self.table_name} WHERE #{attribute_hash.keys.first} = #{formatted_value}"
         DB[:conn].execute(sql)
-    end
+      end
 
     def initialize(options = {})
         options.each do |property, value|
